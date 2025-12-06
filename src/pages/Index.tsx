@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import BookingDialog from '@/components/BookingDialog';
 import AuthDialog from '@/components/AuthDialog';
 import { Toaster } from '@/components/ui/toaster';
+import Logo from '@/components/Logo';
 
 const services = [
   {
@@ -52,12 +54,12 @@ const services = [
 ];
 
 const portfolioItems = [
-  { id: 1, category: 'Свадебный' },
-  { id: 2, category: 'Вечерний' },
-  { id: 3, category: 'Естественный' },
-  { id: 4, category: 'Прически' },
-  { id: 5, category: 'Фотосессия' },
-  { id: 6, category: 'Креативный' }
+  { id: 1, category: 'Свадебный', image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&q=80' },
+  { id: 2, category: 'Вечерний', image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80' },
+  { id: 3, category: 'Естественный', image: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=80' },
+  { id: 4, category: 'Прически', image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80' },
+  { id: 5, category: 'Фотосессия', image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=800&q=80' },
+  { id: 6, category: 'Креативный', image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&q=80' }
 ];
 
 const testimonials = [
@@ -83,6 +85,7 @@ export default function Index() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -112,7 +115,10 @@ export default function Index() {
       <nav className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm z-50 border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-primary">Елена Стилист</h1>
+            <div className="flex items-center gap-3">
+              <Logo size={40} className="text-accent" />
+              <h1 className="text-2xl font-bold text-primary">Екатерина Сергеевна</h1>
+            </div>
             <div className="hidden md:flex gap-8">
               {['home', 'portfolio', 'services', 'about', 'reviews', 'contacts'].map((section) => (
                 <button
@@ -134,7 +140,10 @@ export default function Index() {
             <div className="flex items-center gap-3">
               {user ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-foreground hidden md:block">{user.name}</span>
+                  <Button size="sm" variant="outline" onClick={() => navigate('/cabinet')}>
+                    <Icon name="User" size={16} className="mr-2" />
+                    {user.name}
+                  </Button>
                   <Button size="sm" variant="outline" onClick={handleLogout}>
                     Выйти
                   </Button>
@@ -193,9 +202,11 @@ export default function Index() {
                 className="group relative aspect-[3/4] bg-muted rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="w-full h-full flex items-center justify-center">
-                  <Icon name="Image" size={80} className="opacity-20 text-muted-foreground" />
-                </div>
+                <img 
+                  src={item.image} 
+                  alt={item.category}
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <p className="text-white text-lg font-light">{item.category}</p>
                 </div>
@@ -319,7 +330,7 @@ export default function Index() {
               <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center">
                 <Icon name="MapPin" size={28} className="text-accent" />
               </div>
-              <p className="text-foreground font-medium">Москва, Центр</p>
+              <p className="text-foreground font-medium">Самара, ул. Ленинградская, 55</p>
             </div>
           </div>
           <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={() => setBookingOpen(true)}>
@@ -330,7 +341,7 @@ export default function Index() {
 
       <footer className="py-8 px-4 border-t border-border">
         <div className="container mx-auto max-w-6xl text-center">
-          <p className="text-muted-foreground">© 2024 Елена Стилист. Все права защищены.</p>
+          <p className="text-muted-foreground">© 2025 Екатерина Сергеевна. Все права защищены.</p>
         </div>
       </footer>
 
