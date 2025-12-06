@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import BookingDialog from '@/components/BookingDialog';
+import AuthDialog from '@/components/AuthDialog';
+import { Toaster } from '@/components/ui/toaster';
 
 const services = [
   {
@@ -77,6 +80,26 @@ const testimonials = [
 
 export default function Index() {
   const [activeSection, setActiveSection] = useState('home');
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
+  const handleAuthSuccess = (userData: { name: string; email: string }) => {
+    setUser(userData);
+  };
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -108,9 +131,23 @@ export default function Index() {
                 </button>
               ))}
             </div>
-            <Button size="sm" className="bg-accent hover:bg-accent/90">
-              Записаться
-            </Button>
+            <div className="flex items-center gap-3">
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-foreground hidden md:block">{user.name}</span>
+                  <Button size="sm" variant="outline" onClick={handleLogout}>
+                    Выйти
+                  </Button>
+                </div>
+              ) : (
+                <Button size="sm" variant="outline" onClick={() => setAuthOpen(true)}>
+                  Войти
+                </Button>
+              )}
+              <Button size="sm" className="bg-accent hover:bg-accent/90" onClick={() => setBookingOpen(true)}>
+                Записаться
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
@@ -126,8 +163,8 @@ export default function Index() {
                 Профессиональный визажист и стилист по причёскам. Создаю образы, которые подчёркивают вашу естественную красоту и индивидуальность.
               </p>
               <div className="flex gap-4">
-                <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={() => scrollToSection('services')}>
-                  Услуги и цены
+                <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={() => setBookingOpen(true)}>
+                  Записаться онлайн
                 </Button>
                 <Button size="lg" variant="outline" onClick={() => scrollToSection('portfolio')}>
                   Портфолио
@@ -285,7 +322,7 @@ export default function Index() {
               <p className="text-foreground font-medium">Москва, Центр</p>
             </div>
           </div>
-          <Button size="lg" className="bg-accent hover:bg-accent/90">
+          <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={() => setBookingOpen(true)}>
             Записаться на консультацию
           </Button>
         </div>
@@ -296,6 +333,10 @@ export default function Index() {
           <p className="text-muted-foreground">© 2024 Елена Стилист. Все права защищены.</p>
         </div>
       </footer>
+
+      <BookingDialog open={bookingOpen} onOpenChange={setBookingOpen} />
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} onAuthSuccess={handleAuthSuccess} />
+      <Toaster />
     </div>
   );
 }
